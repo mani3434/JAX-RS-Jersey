@@ -5,7 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import com.fund.Java_Rest_jersy.model.Comments;
+import com.fund.Java_Rest_jersy.model.ErrorMessage;
 import com.fund.Java_Rest_jersy.model.Message;
 import com.fund.Java_Rest_jersy.resources.DataSource;
 
@@ -32,6 +38,7 @@ public class CommentService {
 	
 	public List<Comments> allCommnets(long messageId){
 		
+		
 		Map<Long, Comments> cs = msg.get(messageId).getComments();
 	
 		List<Comments> li = new ArrayList<>(cs.values());
@@ -42,8 +49,19 @@ public class CommentService {
 	
 	public Comments getComment(long mid, long id) {
 		
+		ErrorMessage er = new ErrorMessage("webapplication exception", 404, "this is error :)");
+		Response r=  Response.status(Status.NOT_FOUND).entity(er).build();
+		Message m = msg.get(mid);
+		if(m==null) {
+			throw new WebApplicationException(r);
+		}
+		
 		Map<Long, Comments> cs = msg.get(mid).getComments();
 				
+		Comments c = cs.get(id);
+		if(c==null) {
+			throw new NotFoundException(r);
+		}
 		return cs.get(id);
 	}
 	

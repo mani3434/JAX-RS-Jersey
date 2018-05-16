@@ -1,6 +1,6 @@
 package com.fund.Java_Rest_jersy.resources;
 
-import java.net.URI;
+
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -15,16 +15,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.fund.Java_Rest_jersy.exception.DonotFoundException;
 import com.fund.Java_Rest_jersy.model.Message;
 import com.fund.Java_Rest_jersy.service.MessageService;
 
 
 @Path("messages")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(value= {MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+@Consumes(value= {MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 public class MessageResource {
 
 	
@@ -33,20 +33,40 @@ public class MessageResource {
 	
 	@GET
 	@Path("/{id}")
-	public Message getMessage(@PathParam("id") Long id) {
+	public Message getMessage(@PathParam("id") Long id, @Context() UriInfo uriinfo) {
 		
-//		List<Message> li = ms.getAllMessages();
-//		
-//		String r ="";
-//		for(Message m: li) {
-//		
-//			if(m.getId()==id) {
-//				
-//				r += m.toString(); 
-//			}
-//		}	
+		Message m = ms.getMessage(id);
+		
+		if(m == null ) {
+			
+			throw new DonotFoundException("Check the id number");
+		}
+//		String s = uriinfo.getAbsolutePathBuilder().toString();
+		
+		String s = getUriForSelf(m, uriinfo);
+		String s1 = getUriForAuthor(uriinfo, m);
+		String s2 = getUriForComments(uriinfo, m);
+		
+		m.addLink(s, "self");
+		m.addLink(s1, "author");
+		m.addLink(s2, "comments");
 		
 		return ms.getMessage(id);
+	}
+
+
+	private String getUriForSelf(Message m, UriInfo uriinfo) {
+		String s = uriinfo.getBaseUriBuilder().path(MessageResource.class).path(Long.toString(m.getId())).build().toString();
+		return s;
+	}
+	private String getUriForAuthor( UriInfo uriinfo, Message m) {
+		String s = uriinfo.getBaseUriBuilder().path(ProfileResource.class).path(m.getAuthor()).build().toString();
+		return s;
+	}
+	private String getUriForComments( UriInfo uriinfo, Message m) {
+		String s = uriinfo.getBaseUriBuilder().path(MessageResource.class).path(CommentsResource.class).path(MessageResource.class, "comment")
+				.resolveTemplate("mid", m.getId()).build().toString();
+		return s;
 	}
 	
 	

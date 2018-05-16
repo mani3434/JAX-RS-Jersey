@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fund.Java_Rest_jersy.model.Links;
 import com.fund.Java_Rest_jersy.model.Message;
 import com.fund.Java_Rest_jersy.resources.DataSource;
+import com.sun.research.ws.wadl.Link;
 
 
 
@@ -13,15 +15,16 @@ public class MessageService {
 
 
 	private Map<Long, Message> msg = DataSource.getMessages();
+	private List<Links> lists = new ArrayList<>();
 	
 	
 	public MessageService() {
 		
 		msg.put(1L, new Message(1L, "Hi", "mani"));
-		msg.put(2L, new Message(3L, "Hello", "jaga"));
-		msg.put(3L, new Message(2L, "Hey", "dad"));
+		msg.put(2L, new Message(2L, "Hello", "jaga"));
+		msg.put(3L, new Message(3L, "Hey", "dad"));
 		
-		//System.out.println("Initial objects"+msg );
+		
 	}
 	
 	public List<Message> getAllMessages(){
@@ -32,7 +35,8 @@ public class MessageService {
 	
 	public Message getMessage(Long id) {
 		
-		return msg.get(id);
+		Message m = msg.get(id);
+		return m;
 	}
 	
 	public Message putMessage(Message m) {

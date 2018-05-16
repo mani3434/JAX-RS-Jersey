@@ -1,11 +1,14 @@
 package com.fund.Java_Rest_jersy.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 
 @XmlRootElement
 public class Message {
@@ -15,6 +18,7 @@ public class Message {
 		private Date created;
 		private String author;
 		private Map<Long, Comments> comments = new HashMap<>();
+		private List<Links> links = new ArrayList<>();
 		
 		
 		public Message() {
@@ -73,6 +77,21 @@ public class Message {
 
 		public void setComments(Map<Long, Comments> comments) {
 			this.comments = comments;
+		}
+
+		public List<Links> getLinks() {
+			return links;
+		}
+
+		public void setLinks(List<Links> links) {
+			this.links = links;
+		}
+		
+		public void addLink(String url, String rel) {
+				Links li = new Links();
+				li.setLink(url);
+				li.setRel(rel);
+				links.add(li);
 		}
 		
 	}
